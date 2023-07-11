@@ -1,0 +1,13 @@
+Al momento de agregar un producto no salir hasta rellenar todos los campos 
+
+
+hacerlo responsivo 
+
+cuando se elimine un producto que salte una alerta preguntando "Desea eliminar el producto xxxx?" 
+
+lo mismo con las ventas
+
+y lo mismo con la edicion de los productos con el mensaje de "confirmas los cambios? 
+
+
+
