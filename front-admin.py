@@ -6,23 +6,70 @@ from conexion import *
 db = DataBase()
 
 def mostrar_productos_categoria(categoria, lista):
-    consulta = f"SELECT nombre FROM productos WHERE categoria = '{categoria}'"
+    consulta = f"SELECT nombre, precio, cantidad FROM productos WHERE categoria = '{categoria}'"
     db.cursor.execute(consulta)
     productos = db.cursor.fetchall()
-    
+
     lista.delete(0, tk.END)
-    
+
     for producto in productos:
         nombre = producto[0]
-        lista.insert(tk.END, nombre)
+        precio = producto[1]
+        cantidad = producto[2]
+        lista.insert(tk.END, f"{nombre} - Precio: {precio} - Cantidad: {cantidad}")
 
 
 
 
+def eliminar_producto(lista):
+    seleccion = lista.curselection()  # Obtener índice seleccionado
+    if seleccion:
+        nombre = lista.get(seleccion)  # Obtener nombre del producto
+        consulta = "DELETE FROM productos WHERE nombre = %s"
+        db.cursor.execute(consulta, (nombre,))
+        db.connection.commit()
+        lista.delete(seleccion)  # Eliminar elemento de la lista
+        messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
 
 
+def editar_producto(lista):
+    seleccion = lista.curselection()  # Obtener índice seleccionado
+    if seleccion:
+        nombre = lista.get(seleccion)  # Obtener nombre del producto
+        consulta = "SELECT nombre, precio FROM productos WHERE nombre = %s"
+        db.cursor.execute(consulta, (nombre,))
+        producto = db.cursor.fetchone()  # Obtener datos del producto
+        if producto:
+            ventana_editar = tk.Toplevel(ventana)
+            ventana_editar.title("Editar Producto")
+
+            etiqueta_nombre = tk.Label(ventana_editar, text="Nombre:")
+            etiqueta_nombre.pack()
+            campo_nombre = tk.Entry(ventana_editar)
+            campo_nombre.pack()
+            campo_nombre.insert(tk.END, producto[0])  # Mostrar nombre del producto
+
+            etiqueta_precio = tk.Label(ventana_editar, text="Precio:")
+            etiqueta_precio.pack()
+            campo_precio = tk.Entry(ventana_editar)
+            campo_precio.pack()
+            campo_precio.insert(tk.END, producto[1])  # Mostrar precio del producto
+
+            boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), lista))
+            boton_guardar.pack()
+
+def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, lista):
+    consulta = "UPDATE productos SET nombre = %s, precio = %s WHERE nombre = %s"
+    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, nombre_original))
+    db.connection.commit()
+    lista.delete(lista.curselection())
+    lista.insert(lista.curselection(), nombre_nuevo)
+    ventana_editar.destroy()
+    messagebox.showinfo("Éxito", "Los cambios han sido guardados correctamente.")
 
 
+ 
+ 
 
 # ventana que muestra el modal
 def agregar_producto(categoria):
@@ -50,40 +97,36 @@ def agregar_producto(categoria):
     campo_precio.pack()
     
     
+    etiqueta_cantidad = tk.Label(ventana_agregar, text="Cantidad:")
+    etiqueta_cantidad.pack()
+    campo_cantidad = tk.Entry(ventana_agregar)
+    campo_cantidad.pack()
     
-    boton_guardar = tk.Button(ventana_agregar, text="Guardar", command= lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla))
-    boton_guardar.pack() 
+    
+    boton_guardar = tk.Button(ventana_agregar, text="Guardar", command=lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla, "Comida"))
+    boton_guardar
+    
+
     
     
     # etiqueta_categoria = tk.Label(ventana_agregar, text="Categoria:")
     # etiqueta_categoria.pack()
     # campo_categoria = tk.Entry(ventana_agregar)
     # campo_categoria.pack()
-    
+
     
        
-    #funcion eliminar producto 
+
+
     
-def eliminar_producto(categoria, lista):
-    # Obtener el índice seleccionado en la lista
-    indice = lista.curselection()
-    if indice:
-        # Obtener el nombre del producto seleccionado
-        nombre = lista.get(indice)
 
-        # Eliminar el producto de la base de datos
-        consulta = f"DELETE FROM productos WHERE nombre = '{nombre}' AND categoria = '{categoria}'"
-        db.cursor.execute(consulta)
-        db.connection.commit()
-
-        # Eliminar el producto de la interfaz gráfica
-        lista.delete(indice)
-
-        messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
-    else:
-        messagebox.showinfo("Error", "No se ha seleccionado ningún producto.")
-
-
+    
+   
+    
+    
+    
+    
+    
     
     
     
@@ -136,16 +179,22 @@ def eliminar_producto(categoria, lista):
     
     
     
+
+    
+    
+    
+    
     
     
 
     # Resto de campos del formulario
     
-def guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla):
+def guardar_producto(ventana_agregar, campo_cantidad, campo_nombre, campo_precio, tabla):
     
         
         nombre = campo_nombre.get()
         precio = campo_precio.get()
+        cantidad = campo_cantidad.get()
         # categoria = campo_categoria.get()
         
         
@@ -157,16 +206,14 @@ def guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla):
         # consulta = "INSERT INTO productos (nombre, codigo, descripcion, cantidad, precio_compra, precio_venta, proveedor_id, fecha_compra, ubicacion_id, categoria) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         # valores = (nombre, codigo, descripcion, cantidad, precio_compra, precio_venta, proveedor_id, fecha_compra, ubicacion_id, categoria)
         
-        
-        valores = (nombre, precio, tabla)
-        consulta = "INSERT INTO productos (nombre, precio, categoria) VALUES (%s, %s, %s)"
-        
+        valores = (nombre, precio, cantidad, tabla)
+        consulta = "INSERT INTO productos (nombre, precio, cantidad, categoria) VALUES (%s, %s, %s, %s)"
         
         db.cursor.execute(consulta, valores)
         db.connection.commit()
         
         # Mostrar el producto en la lista correspondiente
-        if tabla == "Comida":
+        if tabla == "Comida":   
             lista_comida.insert(tk.END, nombre)
             messagebox.showinfo("Éxito", "El producto ha sido agregado correctamente.")
             ventana_agregar.destroy()
@@ -182,23 +229,13 @@ def guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla):
             lista_higiene.insert(tk.END, nombre)
             messagebox.showinfo("Éxito", "El producto ha sido agregado correctamente.")
             ventana_agregar.destroy()
-            
+                    
             
         
     
     
     
-def mostrar_productos_categoria(categoria, lista):
-    consulta = f"SELECT nombre, precio FROM productos WHERE categoria = '{categoria}'"
-    db.cursor.execute(consulta)
-    productos = db.cursor.fetchall()
-
-    lista.delete(0, tk.END)
-
-    for producto in productos:
-        nombre = producto[0]
-        precio = producto[1]
-        lista.insert(tk.END, f"{nombre} - {precio}")
+    
     
 
 
@@ -239,55 +276,6 @@ search_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 marco_productos = tk.Frame(ventana)
 marco_productos.pack(pady=10)
-
-#funcion eliminar producto 
-def eliminar_producto(lista):
-    seleccion = lista.curselection()  # Obtener índice seleccionado
-    if seleccion:
-        nombre = lista.get(seleccion)  # Obtener nombre del producto
-        consulta = "DELETE FROM productos WHERE nombre = %s"
-        db.cursor.execute(consulta, (nombre,))
-        db.connection.commit()
-        lista.delete(seleccion)  # Eliminar elemento de la lista
-        messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
-
-
-#funcion editar producto 
-def editar_producto(lista):
-    seleccion = lista.curselection()  # Obtener índice seleccionado
-    if seleccion:
-        nombre = lista.get(seleccion)  # Obtener nombre del producto
-        consulta = "SELECT nombre, precio FROM productos WHERE nombre = %s"
-        db.cursor.execute(consulta, (nombre,))
-        producto = db.cursor.fetchone()  # Obtener datos del producto
-        if producto:
-            ventana_editar = tk.Toplevel(ventana)
-            ventana_editar.title("Editar Producto")
-
-            etiqueta_nombre = tk.Label(ventana_editar, text="Nombre:")
-            etiqueta_nombre.pack()
-            campo_nombre = tk.Entry(ventana_editar)
-            campo_nombre.pack()
-            campo_nombre.insert(tk.END, producto[0])  # Mostrar nombre del producto
-
-            etiqueta_precio = tk.Label(ventana_editar, text="Precio:")
-            etiqueta_precio.pack()
-            campo_precio = tk.Entry(ventana_editar)
-            campo_precio.pack()
-            campo_precio.insert(tk.END, producto[1])  # Mostrar precio del producto
-
-            boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), lista))
-            boton_guardar.pack()
-
-def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, lista):
-    consulta = "UPDATE productos SET nombre = %s, precio = %s WHERE nombre = %s"
-    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, nombre_original))
-    db.connection.commit()
-    lista.delete(lista.curselection())
-    lista.insert(lista.curselection(), nombre_nuevo)
-    ventana_editar.destroy()
-    messagebox.showinfo("Éxito", "Los cambios han sido guardados correctamente.")
-
 
 
 # lightblue
@@ -359,9 +347,7 @@ boton_venta.pack(side=tk.LEFT, padx=20, pady=10)
 # Mostrar los productos en las listas correspondientes
 mostrar_productos_categoria("Comida", lista_comida)
 mostrar_productos_categoria("Bebidas", lista_bebidas)
-mostrar_productos_categoria("Higiene", lista_higiene)
-
-
+mostrar_productos_categoria("Higiene", lista_higiene)       
 
 
 
