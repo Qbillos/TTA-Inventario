@@ -18,7 +18,7 @@ def mostrar_productos_categoria(categoria, lista):
         cantidad = producto[2]
         lista.insert(tk.END, f"{nombre} - Precio: {precio} - Cantidad: {cantidad}")
 
-
+""" Esta función elimina una función de la interfaz y de la base de datos """
 
 def eliminar_producto(lista):
     seleccion = lista.curselection()  # Obtener índice seleccionado
@@ -30,7 +30,7 @@ def eliminar_producto(lista):
         lista.delete(seleccion)  # Eliminar elemento de la lista
         messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
 
-
+""" Esta función edita un producto """
 def editar_producto(lista):
     seleccion = lista.curselection()  # Obtener índice seleccionado
     if seleccion:
@@ -85,25 +85,23 @@ def agregar_producto(categoria):
     ventana_agregar = tk.Toplevel(ventana)
     ventana_agregar.title("Agregar Producto")
 
+    """Campos del formulario"""
     etiqueta_nombre = tk.Label(ventana_agregar, text="Nombre:")
     etiqueta_nombre.pack()
     campo_nombre = tk.Entry(ventana_agregar)
     campo_nombre.pack()
-
-
 
     etiqueta_precio = tk.Label(ventana_agregar, text="precio:")
     etiqueta_precio.pack()
     campo_precio = tk.Entry(ventana_agregar)
     campo_precio.pack()
     
-    
     etiqueta_cantidad = tk.Label(ventana_agregar, text="Cantidad:")
     etiqueta_cantidad.pack()
     campo_cantidad = tk.Entry(ventana_agregar)
     campo_cantidad.pack()
     
-    
+    """Botón guardar"""
     boton_guardar = tk.Button(ventana_agregar, text="Guardar", command=lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad, tabla))
     boton_guardar.pack()
     
@@ -150,41 +148,14 @@ def guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad
         elif tabla == "Higiene":
             lista_higiene.insert(tk.END, nombre)
             messagebox.showinfo("Éxito", "El producto ha sido agregado correctamente.")
-            ventana_agregar.destroy()
-            
-        else:   
-            messagebox.showinfo("esta mierda no funciona")
-            ventana_agregar.destroy()
-                    
-            
-        
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
- 
+            ventana_agregar.destroy()                   
+  
+"""Inicio del programa"""
 
 ventana = tk.Tk()
 ventana.title("Inventario de Productos")
 
-
-
-
+#Mensaje de Bienvenida
 mensaje_bienvenida = tk.Label(ventana, text="Hola Bienvenido al Hospedaje!", font=("Arial", 20))
 mensaje_bienvenida.pack(pady=10)
 
@@ -203,7 +174,7 @@ search_button.pack(side=tk.LEFT, padx=10, pady=10)
 marco_productos = tk.Frame(ventana)
 marco_productos.pack(pady=10)
 
-
+"""Boton y label comida"""
 # lightblue
 marco_comida = tk.Frame(marco_productos, bg="green3", padx=10, pady=10)
 marco_comida.grid(row=0, column=0)
@@ -223,7 +194,7 @@ boton_comida_eliminar.pack(pady=5)
 boton_comida_editar = tk.Button(marco_comida, text="Editar producto", command=lambda: editar_producto(lista_comida), font=("Arial", 12))
 boton_comida_editar.pack(pady=5)
 
-
+"""Boton y label bebidas"""
 
 marco_bebidas = tk.Frame(marco_productos, bg="lightgreen", padx=10, pady=10)
 marco_bebidas.grid(row=0, column=1)
@@ -242,6 +213,8 @@ boton_bebidas_eliminar.pack(pady=5)
 
 boton_bebidas_editar = tk.Button(marco_bebidas, text="Editar producto", command=lambda: editar_producto(lista_bebidas), font=("Arial", 12))
 boton_bebidas_editar.pack(pady=5)
+
+"""Boton y label higiene"""
 
 marco_higiene = tk.Frame(marco_productos, bg="lightyellow", padx=10, pady=10)
 marco_higiene.grid(row=0, column=2)
@@ -275,6 +248,5 @@ mostrar_productos_categoria("Comida", lista_comida)
 mostrar_productos_categoria("Bebidas", lista_bebidas)
 mostrar_productos_categoria("Higiene", lista_higiene)       
 
-
-
+"""Final"""
 ventana.mainloop()
