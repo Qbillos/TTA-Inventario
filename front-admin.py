@@ -20,7 +20,6 @@ def mostrar_productos_categoria(categoria, lista):
 
 
 
-
 def eliminar_producto(lista):
     seleccion = lista.curselection()  # Obtener índice seleccionado
     if seleccion:
@@ -36,7 +35,7 @@ def editar_producto(lista):
     seleccion = lista.curselection()  # Obtener índice seleccionado
     if seleccion:
         nombre = lista.get(seleccion)  # Obtener nombre del producto
-        consulta = "SELECT nombre, precio FROM productos WHERE nombre = %s"
+        consulta = "SELECT nombre, precio, cantidad, FROM productos WHERE nombre = %s"
         db.cursor.execute(consulta, (nombre,))
         producto = db.cursor.fetchone()  # Obtener datos del producto
         if producto:
@@ -54,28 +53,31 @@ def editar_producto(lista):
             campo_precio = tk.Entry(ventana_editar)
             campo_precio.pack()
             campo_precio.insert(tk.END, producto[1])  # Mostrar precio del producto
+            
+            etiqueta_cantidad = tk.Label(ventana_editar, text="Cantidad:")
+            etiqueta_cantidad.pack()
+            campo_cantidad = tk.Entry(ventana_editar)
+            campo_cantidad.pack()
+            campo_cantidad.insert(tk.END, producto[2])  # Mostrar cantidad del producto
 
-            boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), lista))
+            boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), campo_cantidad.get(), lista))
             boton_guardar.pack()
+            
 
-def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, lista):
-    consulta = "UPDATE productos SET nombre = %s, precio = %s WHERE nombre = %s"
-    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, nombre_original))
+def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, campo_cantidad, lista):
+    consulta = "UPDATE productos SET nombre = %s, precio = %s, cantidad = %s WHERE nombre = %s"
+    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, campo_cantidad, nombre_original))
     db.connection.commit()
     lista.delete(lista.curselection())
     lista.insert(lista.curselection(), nombre_nuevo)
-    ventana_editar.destroy()
     messagebox.showinfo("Éxito", "Los cambios han sido guardados correctamente.")
-
-
- 
+    ventana_editar.destroy()
  
 
 # ventana que muestra el modal
 def agregar_producto(categoria):
     
-    
-    
+
     #esta es la ventana 
     
     tabla = str(categoria)
@@ -87,7 +89,6 @@ def agregar_producto(categoria):
     etiqueta_nombre.pack()
     campo_nombre = tk.Entry(ventana_agregar)
     campo_nombre.pack()
-
 
 
 
@@ -103,93 +104,14 @@ def agregar_producto(categoria):
     campo_cantidad.pack()
     
     
-    boton_guardar = tk.Button(ventana_agregar, text="Guardar", command=lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, tabla, "Comida"))
-    boton_guardar
-    
-
-    
-    
-    # etiqueta_categoria = tk.Label(ventana_agregar, text="Categoria:")
-    # etiqueta_categoria.pack()
-    # campo_categoria = tk.Entry(ventana_agregar)
-    # campo_categoria.pack()
-
-    
-       
-
-
-    
-
-    
-   
-    
-    
-    
-    
-    
-    
-    
-    
-    # etiqueta_precio = tk.Label(ventana_agregar, text="Precio:")
-    # etiqueta_precio.pack()
-    
-    
-    # global campo_precio = tk.Entry(ventana_agregar)
-    
-    
-    # campo_precio.pack()
-    
-    
-    # etiqueta_descripcion = tk.Label(ventana_agregar, text="descripcion:")
-    # etiqueta_descripcion.pack()
-    
-    
-    
-    # global campo_descripcion = tk.Entry(ventana_agregar)
-    
-    
-    # campo_descripcion.pack()
-    
-    
-    
-    # etiqueta_cantidad = tk.Label(ventana_agregar, text="cantidad:")
-    # etiqueta_cantidad.pack()
-    
-    
-    # global campo_cantidad = tk.Entry(ventana_agregar)
-    
-    
-    
-    # campo_cantidad.pack()
-    
-    # etiqueta_provedorid = tk.Label(ventana_agregar, text="provedor:")
-    # etiqueta_provedorid.pack()
-    
-    
-    
-    
-    # global campo_proveedor_id = tk.Entry(ventana_agregar)
-    
-    
-    
-    
-    # campo_proveedor_id.pack()
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
+    boton_guardar = tk.Button(ventana_agregar, text="Guardar", command=lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad, tabla))
+    boton_guardar.pack()
     
     
 
     # Resto de campos del formulario
     
-def guardar_producto(ventana_agregar, campo_cantidad, campo_nombre, campo_precio, tabla):
+def guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad, tabla):
     
         
         nombre = campo_nombre.get()
@@ -228,6 +150,10 @@ def guardar_producto(ventana_agregar, campo_cantidad, campo_nombre, campo_precio
         elif tabla == "Higiene":
             lista_higiene.insert(tk.END, nombre)
             messagebox.showinfo("Éxito", "El producto ha sido agregado correctamente.")
+            ventana_agregar.destroy()
+            
+        else:   
+            messagebox.showinfo("esta mierda no funciona")
             ventana_agregar.destroy()
                     
             
