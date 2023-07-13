@@ -21,21 +21,36 @@ def mostrar_productos_categoria(categoria, lista):
 """ Esta función elimina una función de la interfaz y de la base de datos """
 
 def eliminar_producto(lista):
-    seleccion = lista.curselection()  # Obtener índice seleccionado
+    # Obtener índice seleccionado en la lista
+    seleccion = lista.curselection()
+
+    # Verificar si se ha seleccionado un elemento
     if seleccion:
-        nombre = lista.get(seleccion)  # Obtener nombre del producto
-        consulta = "DELETE FROM productos WHERE nombre = %s"
-        db.cursor.execute(consulta, (nombre,))
-        db.connection.commit()
-        lista.delete(seleccion)  # Eliminar elemento de la lista
-        messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
+        # Obtener nombre del producto seleccionado
+        nombre = lista.get(seleccion)
+
+        try:
+            # Realizar la eliminación del producto en la base de datos
+            consulta = "DELETE FROM productos WHERE nombre = %s"
+            db.cursor.execute(consulta, (nombre,))
+            db.connection.commit()
+
+            # Eliminar el elemento seleccionado de la lista
+            lista.delete(seleccion)
+
+            # Mostrar mensaje de éxito al usuario
+            messagebox.showinfo("Éxito", "El producto ha sido eliminado correctamente.")
+        except Exception as e:
+            # Mostrar mensaje de error en caso de fallo
+            messagebox.showerror("Error", f"No se pudo eliminar el producto: {str(e)}")
+
 
 """ Esta función edita un producto """
 def editar_producto(lista):
     seleccion = lista.curselection()  # Obtener índice seleccionado
     if seleccion:
         nombre = lista.get(seleccion)  # Obtener nombre del producto
-        consulta = "SELECT nombre, precio, cantidad, FROM productos WHERE nombre = %s"
+        consulta = "SELECT nombre, precio, cantidad FROM productos WHERE nombre = %s"
         db.cursor.execute(consulta, (nombre,))
         producto = db.cursor.fetchone()  # Obtener datos del producto
         if producto:
@@ -62,16 +77,16 @@ def editar_producto(lista):
 
             boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), campo_cantidad.get(), lista))
             boton_guardar.pack()
-            
 
-def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, campo_cantidad, lista):
+def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, cantidad_nueva, lista):
     consulta = "UPDATE productos SET nombre = %s, precio = %s, cantidad = %s WHERE nombre = %s"
-    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, campo_cantidad, nombre_original))
+    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, cantidad_nueva, nombre_original))
     db.connection.commit()
     lista.delete(lista.curselection())
     lista.insert(lista.curselection(), nombre_nuevo)
     messagebox.showinfo("Éxito", "Los cambios han sido guardados correctamente.")
     ventana_editar.destroy()
+
  
 
 # ventana que muestra el modal
