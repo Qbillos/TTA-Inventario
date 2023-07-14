@@ -11,6 +11,12 @@ ventana.title("Inventario de Productos")
 mensaje_bienvenida = tk.Label(ventana, text="Hola Bienvenido al Hospedaje!", font=("Arial", 20))
 mensaje_bienvenida.pack(pady=10)
 
+def confirmar_salida():
+    if messagebox.askokcancel("Confirmar salida", "¿Está seguro de que desea salir?"):
+        ventana.destroy()
+
+# Asociar la función confirmar_salida con el evento WM_DELETE_WINDOW de la ventana
+ventana.protocol("WM_DELETE_WINDOW", confirmar_salida)
 
 def enviar_carrito():
     if not lista_comida.curselection() and not lista_bebidas.curselection() and not lista_higiene.curselection():
