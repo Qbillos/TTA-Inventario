@@ -111,7 +111,7 @@ boton_salida = tk.Button(marco_acciones, text="Salir", font=("Arial", 12), comma
 boton_salida.pack(side=tk.LEFT, padx=20, pady=10)
 
 # Botón de realizar venta
-boton_venta = tk.Button(marco_acciones, text="Realizar venta", font=("Arial", 12), command=lambda: ventana_venta(ventana))
+boton_venta = tk.Button(marco_acciones, text="Carrito", font=("Arial", 12), command=lambda: ventana_venta(ventana))
 boton_venta.pack(side=tk.LEFT, padx=20, pady=10)
 
 # Mostrar los productos en las listas correspondientes
@@ -128,6 +128,7 @@ def vender_producto(categoria, lista, ventana):
     if indice_seleccionado:
         # Obtener el nombre del producto seleccionado
         producto = lista.get(indice_seleccionado[0])
+        
         
         # Crear una nueva ventana para mostrar los detalles del producto
         ventana_producto = tk.Toplevel(ventana)
@@ -257,5 +258,3 @@ lista_higiene.bind("<<ListboxTriple>>", triple_clic_producto)
 
 
 ventana.mainloop()
-
-
