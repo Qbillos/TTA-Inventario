@@ -1,6 +1,6 @@
 import tkinter as tk
+from tkinter import ttk, messagebox
 from funciones import *
-
 
 
 # Crear la ventana principal
@@ -8,10 +8,21 @@ ventana = tk.Tk()
 ventana.title("Inventario de Productos")
 
 
-
 mensaje_bienvenida = tk.Label(ventana, text="Hola Bienvenido al Hospedaje!", font=("Arial", 20))
 mensaje_bienvenida.pack(pady=10)
 
+
+def enviar_carrito():
+    if not lista_comida.curselection() and not lista_bebidas.curselection() and not lista_higiene.curselection():
+        messagebox.showwarning("Error", "Por favor, seleccione al menos un producto antes de enviar al carrito.")
+    else:
+        # Aquí puedes agregar la lógica para enviar los productos seleccionados al carrito
+        messagebox.showinfo("Éxito", "Productos enviados al carrito correctamente.")
+
+boton_enviar_carrito = tk.Button(ventana, text="Enviar a carrito", font=("Arial", 12), command=enviar_carrito)
+boton_enviar_carrito.pack(padx=50, anchor="nw")
+
+ 
 # Marco de búsqueda
 marco_busqueda = tk.Frame(ventana)
 marco_busqueda.pack(pady=10)
@@ -19,19 +30,17 @@ marco_busqueda.pack(pady=10)
 search_label = tk.Label(marco_busqueda, text="Buscar Productos", font=("Arial", 12))
 search_label.pack(side=tk.LEFT, padx=10, pady=10)
 
-search_bar = tk.Entry(marco_busqueda, width=30, font=("Arial", 12))
+search_bar = ttk.Entry(marco_busqueda, width=30, font=("Arial", 12))
 search_bar.pack(side=tk.LEFT, padx=10, pady=10)
-search_button = tk.Button(marco_busqueda, text="Buscar", font=("Arial", 12))
-search_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 marco_productos = tk.Frame(ventana)
-marco_productos.pack(pady=10)
+marco_productos.pack(pady=5)
 
 # lightblue
 marco_comida = tk.Frame(marco_productos, bg="green3", padx=10, pady=10)
 marco_comida.grid(row=0, column=0)
 
-label_comida = tk.Label(marco_comida, text="Comida", font=("Arial", 20))
+label_comida = tk.Label(marco_comida, text="Comida", font=("Arial", 15))
 label_comida.pack()
 
 lista_comida = tk.Listbox(marco_comida, font=("Helvetica", 12), width=50, height=20)
@@ -49,7 +58,7 @@ boton_comida_editar.pack(pady=5)
 marco_bebidas = tk.Frame(marco_productos, bg="lightgreen", padx=10, pady=10)
 marco_bebidas.grid(row=0, column=1)
 
-label_bebidas = tk.Label(marco_bebidas, text="Bebidas", font=("Arial", 20))
+label_bebidas = tk.Label(marco_bebidas, text="Bebidas", font=("Arial", 15))
 label_bebidas.pack()
 
 lista_bebidas = tk.Listbox(marco_bebidas, font=("Helvetica", 12), width=50, height=20)
@@ -67,7 +76,7 @@ boton_bebidas_editar.pack(pady=5)
 marco_higiene = tk.Frame(marco_productos, bg="lightyellow", padx=10, pady=10)
 marco_higiene.grid(row=0, column=2)
 
-label_higiene = tk.Label(marco_higiene, text="Higiene producto", font=("Arial", 20))
+label_higiene = tk.Label(marco_higiene, text="Higiene", font=("Arial", 15))
 label_higiene.pack()
 
 lista_higiene = tk.Listbox(marco_higiene, font=("Helvetica", 12), width=50, height=20)
@@ -83,16 +92,21 @@ boton_higiene_editar = tk.Button(marco_higiene, text="Editar producto", command=
 boton_higiene_editar.pack(pady=5)
 
 
+marco_acciones = tk.Frame(marco_productos)
+marco_acciones.grid(row=1, column=0, columnspan=3)
+
+# Función de confirmación de salida
+def confirmar_salida():
+    if messagebox.askokcancel("Confirmar salida", "¿Está seguro de que desea salir?"):
+        ventana.destroy()
+
 # Botón de salida
-boton_salida = tk.Button(ventana, text="Salir", font=("Arial", 12), command=cerrar_programa)
+boton_salida = tk.Button(marco_acciones, text="Salir", font=("Arial", 12), command=confirmar_salida)
 boton_salida.pack(side=tk.LEFT, padx=20, pady=10)
 
-
 # Botón de realizar venta
-boton_venta = tk.Button(ventana, text="Realizar venta", font=("Arial", 12), command= lambda: ventana_venta(ventana))
-
-
-boton_venta.pack(side=tk.RIGHT, padx=20, pady=10)
+boton_venta = tk.Button(marco_acciones, text="Realizar venta", font=("Arial", 12), command=lambda: ventana_venta(ventana))
+boton_venta.pack(side=tk.LEFT, padx=20, pady=10)
 
 # Mostrar los productos en las listas correspondientes
 mostrar_productos_categoria("Comida", lista_comida)
@@ -100,251 +114,142 @@ mostrar_productos_categoria("Bebidas", lista_bebidas)
 mostrar_productos_categoria("Higiene", lista_higiene)
 
 
-import tkinter as tk
-from tkinter import messagebox
-from conexion import *
-
-
-
-
-def mostrar_productos_categoria(categoria, lista):
-    consulta = f"SELECT nombre, precio, cantidad FROM productos WHERE categoria = '{categoria}'"
-    db.cursor.execute(consulta)
-    productos = db.cursor.fetchall()
-
-    lista.delete(0, tk.END)
-
-    for producto in productos:
-        nombre = producto[0]
-        precio = producto[1]
-        cantidad = producto[2]
-        lista.insert(tk.END, f"{nombre} - Precio: {precio} - Cantidad: {cantidad}")
-
-def eliminar_producto (categoria, lista):
-    #Obtener el indice seleccionado en la lista
-    indice = lista.curselection()
-    categoria = str (categoria)
-    if indice:
-        #Obtener el nombre del producto seleccionado
-        nombre = lista.get(indice)
-        nombre = nombre.split()[0]
-        
-        #Eliminar el producto de la base de datos
-        consulta = f"DELETE FROM productos WHERE nombre = '{nombre}' AND categoria = '{categoria}'"
-        db.cursor.execute(consulta)
-        db.connection.commit()
-        
-        #eliminar de la interfaz grafica 
-        lista.delete(indice)
-        messagebox.showinfo("Exito", "El producto ha sifo eliminado correctamente.")
+# Función para manejar la venta de un producto
+def vender_producto(categoria, lista, ventana):
+    # Obtener el índice seleccionado
+    indice_seleccionado = lista.curselection()
     
+    if indice_seleccionado:
+        # Obtener el nombre del producto seleccionado
+        producto = lista.get(indice_seleccionado[0])
+        
+        # Crear una nueva ventana para mostrar los detalles del producto
+        ventana_producto = tk.Toplevel(ventana)
+        ventana_producto.title("Detalles del Producto")
+        
+        # Etiqueta para mostrar el nombre del producto
+        etiqueta_producto = tk.Label(ventana_producto, text=f"Producto: {producto}", font=("Arial", 12))
+        etiqueta_producto.pack(pady=10)
+        
+        # Etiqueta para solicitar la cantidad al usuario
+        etiqueta_cantidad = tk.Label(ventana_producto, text="Selecciona una cantidad:", font=("Arial", 12))
+        etiqueta_cantidad.pack(pady=10)
+        
+        # Campo de entrada para que el usuario ingrese la cantidad
+        cantidad_entry = tk.Entry(ventana_producto, font=("Arial", 12))
+        cantidad_entry.insert(tk.END, "1")  
+        cantidad_entry.pack()
+        
+        # Función para agregar la cantidad del producto
+        def agregar_cantidad():
+            cantidad = int(cantidad_entry.get())
+            
+            # Aquí puedes realizar las operaciones necesarias para almacenar la cantidad seleccionada del producto
+            # Puedes utilizar la función modificar_cantidad_producto(categoria, producto, cantidad) para actualizar la cantidad del producto
+            
+            ventana_producto.destroy()
+        
+        # Botón para aceptar la cantidad seleccionada   
+        boton_aceptar = tk.Button(ventana_producto, text="Aceptar", command=agregar_cantidad, font=("Arial", 12))
+        boton_aceptar.pack(pady=10)
+    
+        
+        # Mostrar la ventana del producto
+        ventana_producto.mainloop()
     else:
-        messagebox.showinfo("Error" , "No se ha seleccionado ningun producto.")
-        
-        
-def editar_producto(categoria, lista, ventana):
-    seleccion = lista.curselection()  # Obtener índice seleccionado
-    if seleccion:
-        datos = lista.get(seleccion)  # Obtener nombre del producto
-        
-        nombre = datos.split()[0]
-        
-        consulta = f"SELECT nombre, precio, cantidad FROM productos WHERE nombre = '{nombre}'"
-        db.cursor.execute(consulta)
-        producto = db.cursor.fetchone()  # Obtener datos del producto
-        
-        
-        if producto:
-            ventana_editar = tk.Toplevel(ventana)
-            ventana_editar.title("Editar Producto")
+        # Mostrar mensaje de error si no se selecciona ningún producto
+        messagebox.showerror("Error de selección", "Por favor, seleccione un producto antes de realizar la venta.")
 
-            etiqueta_nombre = tk.Label(ventana_editar, text="Nombre:")
-            etiqueta_nombre.pack()
-            campo_nombre = tk.Entry(ventana_editar)
-            campo_nombre.pack()
-            campo_nombre.insert(tk.END, producto[0])  # Mostrar nombre del producto
 
-            etiqueta_precio = tk.Label(ventana_editar, text="Precio:")
-            etiqueta_precio.pack()
-            campo_precio = tk.Entry(ventana_editar)
-            campo_precio.pack()
-            campo_precio.insert(tk.END, producto[1])  # Mostrar precio del producto
+# Asociar la función vender_producto con el botón de vender
+boton_vender = tk.Button(marco_acciones, text="Vender", command=lambda: vender_producto("Comida", lista_comida, ventana), font=("Arial", 12))
+boton_vender.pack(side=tk.LEFT, padx=20, pady=10)
 
-            etiqueta_cantidad = tk.Label(ventana_editar, text="Cantidad:")
-            etiqueta_cantidad.pack()
-            campo_cantidad = tk.Entry(ventana_editar)
-            campo_cantidad.pack()
-            campo_cantidad.insert(tk.END, producto[2])  # Mostrar cantidad del producto
-
-            boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), campo_cantidad.get(), lista, categoria))
-            boton_guardar.pack()
-    else:
-        messagebox.showinfo("Error" , "No se ha seleccionado ningun producto.")
-        
-        
-        
-        
-        
-
-def guardar_edicion(ventana_editar, nombre_original, nombre_nuevo, precio_nuevo, cantidad_nueva, lista, categoria):
-    consulta = "UPDATE productos SET nombre = %s, precio = %s, cantidad = %s WHERE nombre = %s"
-    db.cursor.execute(consulta, (nombre_nuevo, precio_nuevo, cantidad_nueva, nombre_original))
-    db.connection.commit()
-    mostrar_productos_categoria(categoria, lista)
-    messagebox.showinfo("Éxito", "Los cambios han sido guardados correctamente.")
-    ventana_editar.destroy()
+# Mostrar los botones "Realizar venta" y "Salir" separados
+boton_venta.pack(side=tk.LEFT, padx=580)
+boton_salida.pack(side=tk.LEFT, padx=20)
 
 
 
-
-def agregar_producto(categoria, lista, ventana):
-    tabla = str(categoria)
-
-    ventana_agregar = tk.Toplevel(ventana)
-    ventana_agregar.title("Agregar Producto")
-
-    etiqueta_nombre = tk.Label(ventana_agregar, text="Nombre:")
-    etiqueta_nombre.pack()
-    campo_nombre = tk.Entry(ventana_agregar)
-    campo_nombre.pack()
-
-    etiqueta_precio = tk.Label(ventana_agregar, text="Precio:")
-    etiqueta_precio.pack()
-    campo_precio = tk.Entry(ventana_agregar)
-    campo_precio.pack()
-
-    etiqueta_cantidad = tk.Label(ventana_agregar, text="Cantidad:")
-    etiqueta_cantidad.pack()
-    campo_cantidad = tk.Entry(ventana_agregar)
-    campo_cantidad.pack()
-
-    boton_guardar = tk.Button(ventana_agregar, text="Guardar", command=lambda: guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad, tabla, lista))
-    boton_guardar.pack()
-
-def guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad, tabla, lista):
-    nombre = campo_nombre.get()
-    precio = campo_precio.get()
-    cantidad = campo_cantidad.get()
-
-    valores = (nombre, precio, cantidad, tabla)
-    consulta = "INSERT INTO productos (nombre, precio, cantidad, categoria) VALUES (%s, %s, %s, %s)"
-
-    db.cursor.execute(consulta, valores)
-    db.connection.commit()
-
-    mostrar_productos_categoria(tabla,lista)
+# Función para resaltar el texto coincidente en la lista
+def resaltar_texto(event):
+    texto_busqueda = search_bar.get().lower()
     
+    # Restablecer el estilo de todos los elementos en la lista
+    lista_comida.selection_clear(0, tk.END)
+    lista_bebidas.selection_clear(0, tk.END)
+    lista_higiene.selection_clear(0, tk.END)
     
+    # Resaltar el texto coincidente en la lista de comida
+    for i in range(lista_comida.size()):
+        if texto_busqueda in lista_comida.get(i).lower():
+            lista_comida.selection_set(i)
     
+    # Resaltar el texto coincidente en la lista de bebidas
+    for i in range(lista_bebidas.size()):
+        if texto_busqueda in lista_bebidas.get(i).lower():
+            lista_bebidas.selection_set(i)
     
-    messagebox.showinfo("Éxito", "El producto ha sido agregado correctamente.")
-    ventana_agregar.destroy()
+    # Resaltar el texto coincidente en la lista de higiene
+    for i in range(lista_higiene.size()):
+        if texto_busqueda in lista_higiene.get(i).lower():
+            lista_higiene.selection_set(i)
+
+# Asociar la función resaltar_texto con el evento KeyRelease del Search Bar
+search_bar.bind("<KeyRelease>", resaltar_texto)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def editar_producto_seleccionado(lista):
-#     seleccion = lista.curselection()  # Obtener índice seleccionado
-#     if seleccion:
-#         nombre = lista.get(seleccion)  # Obtener nombre del producto
-#         ventana_editar = tk.Toplevel(ventana)
-#         ventana_editar.title("Editar Producto")
-
-#         etiqueta_nombre = tk.Label(ventana_editar, text="Nombre:")
-#         etiqueta_nombre.pack()
-#         campo_nombre = tk.Entry(ventana_editar)
-#         campo_nombre.pack()
-
-#         etiqueta_precio = tk.Label(ventana_editar, text="Precio:")
-#         etiqueta_precio.pack()
-#         campo_precio = tk.Entry(ventana_editar)
-#         campo_precio.pack()
-
-#         etiqueta_cantidad = tk.Label(ventana_editar, text="Cantidad:")
-#         etiqueta_cantidad.pack()
-#         campo_cantidad = tk.Entry(ventana_editar)
-#         campo_cantidad.pack()
-
-#         boton_cargar = tk.Button(ventana_editar, text="Cargar", command=lambda: cargar_datos_editar(nombre, campo_nombre, campo_precio, campo_cantidad))
-#         boton_cargar.pack()
-
-#         boton_guardar = tk.Button(ventana_editar, text="Guardar", command=lambda: guardar_edicion(ventana_editar, nombre, campo_nombre.get(), campo_precio.get(), campo_cantidad.get(), lista))
-#         boton_guardar.pack()
-
-# def cargar_datos_editar(nombre, campo_nombre, campo_precio, campo_cantidad):
-    consulta = "SELECT nombre, precio, cantidad FROM productos WHERE nombre = %s"
-    db.cursor.execute(consulta, (nombre,))
-    producto = db.cursor.fetchone()
-
-    if producto:
-        campo_nombre.insert(tk.END, producto[0])
-        campo_precio.insert(tk.END, producto[1])
-        campo_cantidad.insert(tk.END, producto[2])
-        
-      
-      
-
-def ventana_venta(ventana):
-    ventana_venta = tk.Toplevel(ventana)
-    ventana_venta.title("Realizar Venta")
-
-    marco_venta = tk.Frame(ventana_venta)
-    marco_venta.pack(padx=10, pady=10)
-
-    marco_venta = tk.Frame(ventana_venta)
-    marco_venta.pack(padx=10, pady=10)
-
-    boton_descartar = tk.Button(marco_venta, text="Descartar venta", font=("Arial", 12))
-    boton_descartar.pack(side=tk.LEFT, anchor=tk.NW, padx=10, pady=10)
+def mostrar_ventana_producto(producto):
+    ventana_producto = tk.Toplevel(ventana)
+    ventana_producto.title("Detalles del Producto")
     
-    lista_productos = tk.Listbox(marco_venta, font=("Helvetica", 12), width=50, height=20)
-    lista_productos.pack()
+    # Etiqueta para solicitar la cantidad al usuario
+    etiqueta_cantidad = tk.Label(ventana_producto, text="Selecciona una cantidad:", font=("Arial", 12))
+    etiqueta_cantidad.pack(pady=10)
     
-    marco_botones = tk.Frame(ventana_venta)
-    marco_botones.pack(pady=10)
+    # Campo de entrada para que el usuario ingrese la cantidad
+    cantidad_entry = tk.Entry(ventana_producto, font=("Arial", 12))
+    cantidad_entry.pack()
+    
+    # Función para agregar la cantidad del producto
+    def agregar_cantidad():
+        cantidad = int(cantidad_entry.get())
+        
+        # Aquí puedes realizar las operaciones necesarias para almacenar la cantidad seleccionada del producto
+        # Puedes utilizar la función modificar_cantidad_producto(categoria, producto, cantidad) para actualizar la cantidad del producto
+        
+        ventana_producto.destroy()
+    
+    # Botón para aceptar la cantidad seleccionada
+    boton_aceptar = tk.Button(ventana_producto, text="Aceptar", command=agregar_cantidad, font=("Arial", 12))
+    boton_aceptar.pack(pady=10)
 
-    boton_cancelar = tk.Button(marco_botones, text="Cancelar venta", font=("Arial", 12))
-    boton_cancelar.pack(side=tk.LEFT, padx=10)
+    # Mostrar la ventana del producto
+    ventana_producto.mainloop()
 
+# Función para manejar el doble clic en un producto
+def triple_clic_producto(event):
+    # Obtener el nombre del producto seleccionado
+    indice_seleccionado = lista_comida.curselection() or lista_bebidas.curselection() or lista_higiene.curselection()
+    if indice_seleccionado and event.num == 3:  # Verificar que se haya hecho triple clic
+        producto = None
+        if lista_comida.curselection():
+            producto = lista_comida.get(indice_seleccionado[0])
+        elif lista_bebidas.curselection():
+            producto = lista_bebidas.get(indice_seleccionado[0])
+        elif lista_higiene.curselection():
+            producto = lista_higiene.get(indice_seleccionado[0])
+        
+        # Mostrar la ventana del producto seleccionado
+        mostrar_ventana_producto(producto)
 
-    boton_confirmar = tk.Button(marco_botones, text="Confirmar venta", font=("Arial", 12))
-    boton_confirmar.pack(side=tk.RIGHT, padx=10)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-db = DataBase()
+# Asociar la función triple_clic_producto con el evento <<ListboxTriple>> de las listas
+lista_comida.bind("<<ListboxTriple>>", triple_clic_producto)
+lista_bebidas.bind("<<ListboxTriple>>", triple_clic_producto)
+lista_higiene.bind("<<ListboxTriple>>", triple_clic_producto)
+
 
 
 ventana.mainloop()
-
-
 
 
