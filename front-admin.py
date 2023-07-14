@@ -3,9 +3,18 @@ from tkinter import ttk, messagebox
 from funciones import *
 
 
+
 # Crear la ventana principal
 ventana = tk.Tk()
+ventana.config(width=300, height=200)
 ventana.title("Inventario de Productos")
+
+style = ttk.Style() 
+style.configure('C.TButton', font=("Roboto Cn", 12))
+style.configure('C.TButton', relief="ridge")
+style.configure('C.TButton', width=3)
+style.configure('C.TButton', bd=1)
+
 
 
 mensaje_bienvenida = tk.Label(ventana, text="Hola Bienvenido al Hospedaje!", font=("Arial", 20))
@@ -25,8 +34,9 @@ def enviar_carrito():
         # Aquí puedes agregar la lógica para enviar los productos seleccionados al carrito
         messagebox.showinfo("Éxito", "Productos enviados al carrito correctamente.")
 
-boton_enviar_carrito = tk.Button(ventana, text="Enviar a carrito", font=("Arial", 12), command=enviar_carrito)
-boton_enviar_carrito.pack(padx=50, anchor="nw")
+boton_enviar_carrito = ttk.Button(ventana, text="Enviar a carrito", width=13, style='C.TButton', command=enviar_carrito)
+boton_enviar_carrito.pack(padx=60, anchor="nw") 
+
 
  
 # Marco de búsqueda
@@ -43,7 +53,7 @@ marco_productos = tk.Frame(ventana)
 marco_productos.pack(pady=5)
 
 # lightblue
-marco_comida = tk.Frame(marco_productos, bg="green3", padx=10, pady=10)
+marco_comida = tk.Frame(marco_productos, bg="#4A6275", padx=10, pady=10)
 marco_comida.grid(row=0, column=0)
 
 label_comida = tk.Label(marco_comida, text="Comida", font=("Arial", 15))
@@ -52,16 +62,16 @@ label_comida.pack()
 lista_comida = tk.Listbox(marco_comida, font=("Helvetica", 12), width=50, height=20)
 lista_comida.pack()
 
-boton_comida = tk.Button(marco_comida, text="Agregar producto", command=lambda: agregar_producto("Comida", lista_comida, ventana), font=("Arial", 12)) 
+boton_comida = ttk.Button(marco_comida, text="Agregar producto", style='C.TButton', width=14, command=lambda: agregar_producto("Comida", lista_comida, ventana)) 
 boton_comida.pack(pady=10)
 
-boton_comida_eliminar = tk.Button(marco_comida, text="Eliminar producto", command=lambda: eliminar_producto("Comida", lista_comida), font=("Arial", 12)) 
+boton_comida_eliminar = ttk.Button(marco_comida, text="Eliminar producto", style='C.TButton', width=14, command=lambda: eliminar_producto("Comida", lista_comida)) 
 boton_comida_eliminar.pack(pady=5)
 
-boton_comida_editar = tk.Button(marco_comida, text="Editar producto", command=lambda: editar_producto("Comida", lista_comida, ventana), font=("Arial", 12))
+boton_comida_editar = ttk.Button(marco_comida, text="Editar producto", style='C.TButton', width=14, command=lambda: editar_producto("Comida", lista_comida, ventana))
 boton_comida_editar.pack(pady=5)
 
-marco_bebidas = tk.Frame(marco_productos, bg="lightgreen", padx=10, pady=10)
+marco_bebidas = tk.Frame(marco_productos, bg="#D5D6D9", padx=10, pady=10)
 marco_bebidas.grid(row=0, column=1)
 
 label_bebidas = tk.Label(marco_bebidas, text="Bebidas", font=("Arial", 15))
@@ -70,16 +80,16 @@ label_bebidas.pack()
 lista_bebidas = tk.Listbox(marco_bebidas, font=("Helvetica", 12), width=50, height=20)
 lista_bebidas.pack()
 
-boton_bebidas = tk.Button(marco_bebidas, text="Agregar producto", command=lambda: agregar_producto("Bebidas", lista_bebidas, ventana), font=("Arial", 12))
+boton_bebidas = ttk.Button(marco_bebidas, text="Agregar producto", style='C.TButton', width=14, command=lambda: agregar_producto("Bebidas", lista_bebidas, ventana))
 boton_bebidas.pack(pady=10)
 
-boton_bebidas_eliminar = tk.Button(marco_bebidas, text="Eliminar producto", command=lambda: eliminar_producto("Bebidas", lista_bebidas), font=("Arial", 12))
+boton_bebidas_eliminar = ttk.Button(marco_bebidas, text="Eliminar producto", style='C.TButton', width=14, command=lambda: eliminar_producto("Bebidas", lista_bebidas))
 boton_bebidas_eliminar.pack(pady=5)
 
-boton_bebidas_editar = tk.Button(marco_bebidas, text="Editar producto", command=lambda: editar_producto("Bebidas", lista_bebidas, ventana), font=("Arial", 12))
+boton_bebidas_editar = ttk.Button(marco_bebidas, text="Editar producto", style='C.TButton', width=14, command=lambda: editar_producto("Bebidas", lista_bebidas, ventana))
 boton_bebidas_editar.pack(pady=5)
 
-marco_higiene = tk.Frame(marco_productos, bg="lightyellow", padx=10, pady=10)
+marco_higiene = tk.Frame(marco_productos, bg="#A1FB8E", padx=10, pady=10)
 marco_higiene.grid(row=0, column=2)
 
 label_higiene = tk.Label(marco_higiene, text="Higiene", font=("Arial", 15))
@@ -88,13 +98,13 @@ label_higiene.pack()
 lista_higiene = tk.Listbox(marco_higiene, font=("Helvetica", 12), width=50, height=20)
 lista_higiene.pack()
 
-boton_higiene = tk.Button(marco_higiene, text="Agregar producto", command=lambda: agregar_producto("Higiene", lista_higiene, ventana), font=("Arial", 12))
+boton_higiene = ttk.Button(marco_higiene, text="Agregar producto", style='C.TButton', width=14, command=lambda: agregar_producto("Higiene", lista_higiene, ventana))
 boton_higiene.pack(pady=10)
 
-boton_higiene_eliminar = tk.Button(marco_higiene, text="Eliminar producto", command=lambda: eliminar_producto("Higiene", lista_higiene), font=("Arial", 12))
+boton_higiene_eliminar = ttk.Button(marco_higiene, text="Eliminar producto", style='C.TButton', width=14, command=lambda: eliminar_producto("Higiene", lista_higiene))
 boton_higiene_eliminar.pack(pady=5)
 
-boton_higiene_editar = tk.Button(marco_higiene, text="Editar producto", command=lambda: editar_producto("Higiene", lista_higiene, ventana), font=("Arial", 12))
+boton_higiene_editar = ttk.Button(marco_higiene, text="Editar producto", style='C.TButton', width=14, command=lambda: editar_producto("Higiene", lista_higiene, ventana))
 boton_higiene_editar.pack(pady=5)
 
 
@@ -107,12 +117,12 @@ def confirmar_salida():
         ventana.destroy()
 
 # Botón de salida
-boton_salida = tk.Button(marco_acciones, text="Salir", font=("Arial", 12), command=confirmar_salida)
-boton_salida.pack(side=tk.LEFT, padx=20, pady=10)
+boton_salida = ttk.Button(marco_acciones, text="Salir", style='C.TButton', width=14, command=confirmar_salida)
+boton_salida.pack(side=tk.LEFT, padx=1, pady=1)
 
 # Botón de realizar venta
-boton_venta = tk.Button(marco_acciones, text="Carrito", font=("Arial", 12), command=lambda: ventana_venta(ventana))
-boton_venta.pack(side=tk.LEFT, padx=20, pady=10)
+boton_venta = ttk.Button(marco_acciones, text="Carrito", style='C.TButton', width=10, command=lambda: ventana_venta(ventana))
+boton_venta.pack(side=tk.LEFT, padx=10, pady=1)
 
 # Mostrar los productos en las listas correspondientes
 mostrar_productos_categoria("Comida", lista_comida)
@@ -147,6 +157,7 @@ def vender_producto(categoria, lista, ventana):
         cantidad_entry.insert(tk.END, "1")  
         cantidad_entry.pack()
         
+        
         # Función para agregar la cantidad del producto
         def agregar_cantidad():
             cantidad = int(cantidad_entry.get())
@@ -169,11 +180,11 @@ def vender_producto(categoria, lista, ventana):
 
 
 # Asociar la función vender_producto con el botón de vender
-boton_vender = tk.Button(marco_acciones, text="Vender", command=lambda: vender_producto("Comida", lista_comida, ventana), font=("Arial", 12))
+boton_vender = ttk.Button(marco_acciones, text="Vender", width=13, style='C.TButton', command=lambda: vender_producto("Comida", lista_comida, ventana))
 boton_vender.pack(side=tk.LEFT, padx=20, pady=10)
 
 # Mostrar los botones "Realizar venta" y "Salir" separados
-boton_venta.pack(side=tk.LEFT, padx=580)
+boton_venta.pack(side=tk.LEFT, padx=520)
 boton_salida.pack(side=tk.LEFT, padx=20)
 
 
