@@ -129,16 +129,13 @@ mostrar_productos_categoria("Comida", lista_comida)
 mostrar_productos_categoria("Bebidas", lista_bebidas)
 mostrar_productos_categoria("Higiene", lista_higiene)
 
-
-# Función para manejar la venta de un producto
 def vender_producto(categoria, lista, ventana):
     # Obtener el índice seleccionado
     indice_seleccionado = lista.curselection()
     
     if indice_seleccionado:
-        # Obtener el nombre del producto seleccionado
+        # Obtener el nombre del producto seleccionado de la categoría correspondiente
         producto = lista.get(indice_seleccionado[0])
-        
         
         # Crear una nueva ventana para mostrar los detalles del producto
         ventana_producto = tk.Toplevel(ventana)
@@ -154,31 +151,36 @@ def vender_producto(categoria, lista, ventana):
         
         # Campo de entrada para que el usuario ingrese la cantidad
         cantidad_entry = tk.Entry(ventana_producto, font=("Arial", 12))
-        cantidad_entry.insert(tk.END, "1")  
+        cantidad_entry.insert(tk.END, "1")
         cantidad_entry.pack()
         
-        
-        # Función para agregar la cantidad del producto
-        def agregar_cantidad():
+        def realizar_venta():
             cantidad = int(cantidad_entry.get())
             
-            # Aquí puedes realizar las operaciones necesarias para almacenar la cantidad seleccionada del producto
-            # Puedes utilizar la función modificar_cantidad_producto(categoria, producto, cantidad) para actualizar la cantidad del producto
+            # Obtener el nombre de la categoría seleccionada
+            nombre_categoria = str(categoria)
+            
+            # Actualizar la cantidad en la base de datos
+            consulta = "UPDATE productos SET cantidad = cantidad - %s WHERE nombre = %s AND categoria = %s"
+            db.cursor.execute(consulta, (cantidad, producto, nombre_categoria))
+            db.connection.commit()
+            
+            # Mostrar un mensaje de éxito
+            messagebox.showinfo("Venta realizada", "La venta se ha realizado correctamente.")
             
             ventana_producto.destroy()
         
-        # Botón para aceptar la cantidad seleccionada   
-        boton_aceptar = tk.Button(ventana_producto, text="Aceptar", command=agregar_cantidad, font=("Arial", 12))
-        boton_aceptar.pack(pady=10)
-    
+        # Botón para realizar la venta
+        boton_vender = tk.Button(ventana_producto, text="Vender", command=realizar_venta, font=("Arial", 12))
+        boton_vender.pack(pady=10)
         
         # Mostrar la ventana del producto
         ventana_producto.mainloop()
     else:
-        # Mostrar mensaje de error si no se selecciona ningún producto
+        # Mostrar un mensaje de error si no se selecciona ningún producto
         messagebox.showerror("Error de selección", "Por favor, seleccione un producto antes de realizar la venta.")
 
-
+        
 # Asociar la función vender_producto con el botón de vender
 boton_vender = ttk.Button(marco_acciones, text="Vender", width=13, style='C.TButton', command=lambda: vender_producto("Comida", lista_comida, ventana))
 boton_vender.pack(side=tk.LEFT, padx=20, pady=10)

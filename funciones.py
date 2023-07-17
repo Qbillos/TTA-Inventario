@@ -191,7 +191,7 @@ def guardar_producto(ventana_agregar, campo_nombre, campo_precio, campo_cantidad
 
 def ventana_venta(ventana):
     ventana_venta = tk.Toplevel(ventana)
-    ventana_venta.title("Realizar Venta")
+    ventana_venta.title("Carrito de compras")
 
     marco_venta = tk.Frame(ventana_venta)
     marco_venta.pack(padx=10, pady=10)
