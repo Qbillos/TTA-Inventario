@@ -445,18 +445,28 @@ def mostrar_ventana_producto(producto):
     cantidad_entry.pack()
     
     # Función para agregar la cantidad del producto
-    def agregar_cantidad():
-        cantidad = int(cantidad_entry.get())
-        
-        # Aquí puedes realizar las operaciones necesarias para almacenar la cantidad seleccionada del producto
-        # Puedes utilizar la función modificar_cantidad_producto(categoria, producto, cantidad) para actualizar la cantidad del producto
-        
-        ventana_producto.destroy()
+def mostrar_ventana_producto(categoria, producto):
+    # Crear una nueva ventana para mostrar los detalles del producto
+    ventana_producto = tk.Toplevel(ventana)
+    ventana_producto.title("Detalles del Producto")
     
-    # Botón para aceptar la cantidad seleccionada
-    boton_aceptar = tk.Button(ventana_producto, text="Aceptar", command=agregar_cantidad, font=("Arial", 12))
-    boton_aceptar.pack(pady=10)
-
+    # Etiqueta para mostrar el nombre del producto
+    etiqueta_producto = tk.Label(ventana_producto, text=f"Producto: {producto}", font=("Arial", 12))
+    etiqueta_producto.pack(pady=10)
+    
+    # Etiqueta para solicitar la cantidad al usuario
+    etiqueta_cantidad = tk.Label(ventana_producto, text="Selecciona una cantidad:", font=("Arial", 12))
+    etiqueta_cantidad.pack(pady=10)
+    
+    # Campo de entrada para que el usuario ingrese la cantidad
+    cantidad_entry = tk.Entry(ventana_producto, font=("Arial", 12))
+    cantidad_entry.insert(tk.END, "1")
+    cantidad_entry.pack()
+    
+    # Botón para realizar la venta
+    boton_vender = tk.Button(ventana_producto, text="Vender", command=lambda: realizar_venta(categoria, producto, cantidad_entry, ventana_producto), font=("Arial", 12))
+    boton_vender.pack(pady=10)
+    
     # Mostrar la ventana del producto
     ventana_producto.mainloop()
 
