@@ -135,18 +135,6 @@ mostrar_productos_categoria("Higiene", lista_higiene)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 def vender_producto(lista1, lista2, lista3, ventana):
     # Obtener el índice seleccionado de la tabla
     indice_comida = lista1.curselection()
