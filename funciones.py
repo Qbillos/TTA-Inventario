@@ -1,9 +1,54 @@
 import tkinter as tk
 from tkinter import messagebox
 from conexion import *
+from time import strftime
+import pandas as pd
+    
+    
     
 
+# LIBRERIAS PANDAS Y OPENPYXL
+def exportar_ecxel():
+        
+    sql = "select id, nombre, precio, categoria from productos"
 
+    db.cursor.execute(sql)
+    
+    filas = db.cursor.fetchall()
+    
+    id, nombre, precio, categoria = [], [], [], []
+    
+    i = 0
+    
+    for dato in filas:
+        id.append(filas[i][0])
+        nombre.append(filas[i][1])
+        precio.append(filas[i][2])
+        categoria.append(filas[i][3])
+        i = i + 1
+        
+    fecha = str(strftime('%d-%m-%y_%H-%M-%S'))
+    datos = {'Producto': nombre, 'Precio': precio, 'Categoria': categoria}
+    df = pd.DataFrame(datos, columns = ['Producto', 'Precio', 'Categoria'])
+    
+    #print(df)
+    
+    df.to_excel(f"DATOS {fecha}.xlsx", sheet_name='Sheet_name_1')
+    
+    
+    messagebox.showinfo('Información', 'Datos guardados')
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 def mostrar_productos_categoria(categoria, lista):
     consulta = f"SELECT nombre, precio, cantidad FROM productos WHERE categoria = '{categoria}'"
